@@ -2,6 +2,7 @@
   <div id="app" class="card center_div">
     <div class="bg-light">
       <Header></Header>
+      <notifications group="foo" />
       <div v-if="!emails.length">
 
         <!--------------------------------- Start Adding Email Component --------------------------------------->
@@ -40,19 +41,11 @@
         v-on:del-todo-event="deleteTodoItem" 
         v-on:mark-todo-event="markComplete" 
         v-on:edit-todo-event="editTodoItem"
-        @archive-todo-event="archiveTodoMethodEvent"></Todos>
+        @archive-todo-event="archiveTodoMethodEvent"
+        @notify-todo="notifyTodoItem"></Todos>
       </div>
+      
       <!--------------------------------- End Display Todo Component --------------------------------------->
-      
-      
-      <!--------------------------------- Start SocialShare Component --------------------------------------->
-      <div>
-        <!-- <input type="datetime-local" name="date" v-model="date"> -->
-        <SocialShare></SocialShare>
-        <!-- <h1 v-if="datePlay">Notify {{ datePlay() }} </h1> -->
-      </div>
-      <!--------------------------------- End SocialShare Component --------------------------------------->
-
 
       <!--------------------------------- Start Todo Pagination Component --------------------------------------->
       <div class="card text-center m-3">
@@ -62,6 +55,15 @@
       </div>
        
       <!--------------------------------- End Todo Pagination Component --------------------------------------->
+      
+      
+      <!--------------------------------- Start SocialShare Component --------------------------------------->
+      <div>
+        <!-- <input type="datetime-local" name="date" v-model="date"> -->
+        <SocialShare></SocialShare>
+      </div>
+      <!--------------------------------- End SocialShare Component --------------------------------------->
+
     
     <!--------------------------------- Start archive Component --------------------------------------->
     <div v-show="archiveShow">
@@ -115,22 +117,32 @@ export default {
               day: '',
               notifiy: '',
               id: ''
-          }
+          },
+          
       }
     },
     methods: {
+      
       archiveShowMethod(){
         this.archiveShow = !this.archiveShow
       },
 
       datePlay(){
-        if (this.current_date == (new Date(this.date).getTime())){
-          // alert('time to notify')
-          return true
-        }else{
-          return false
-        }  
+        this.$notify({
+            group: 'foo',
+            title: 'Important message',
+            text: 'Hello user! This is a notification!'
+          });
+        // if (this.current_date == (new Date(this.date).getTime())){
+        //   alert('time to notify')
+          
+        // }
+          // return true
+        // }else{
+        //   return false
+        // }  
       },
+
       onChangePage(pageOfItems) {
             // update page of items
             this.pageOfItems = pageOfItems;
@@ -148,8 +160,15 @@ export default {
         deleteEmailItem(id) {
           this.emails = this.emails.filter(email_item => email_item.id !== id);
         },
+         
         deleteTodoItem(id){
             this.todo_items = this.todo_items.filter(todo_item => todo_item.id !== id);
+        },
+        notifyTodoItem(id){
+            //find index of this id's object
+            var objIndex = this.todo_items.findIndex(obj => obj.id === id);
+            //reverse true <> false
+            this.todo_items[objIndex].notify = !this.todo_items[objIndex].notify;
         },
         markComplete(id){
             //find index of this id's object
@@ -174,6 +193,48 @@ export default {
             this.todo_items[objIndex].day = todoItem.day;
             this.todo_items[objIndex].notifiy = todoItem.notifiy;
         },
+        joshFunction(one='I Love you', two='Thank you Jesus') {
+          this.$notify({
+            group: 'foo',
+            title: one,
+            text: two
+          });
+        },
+        alertNotification(id) {
+          var objIndex = this.todo_items.findIndex(obj => obj.id === id);
+            // this.todo_items[objIndex].day = !this.todo_items[objIndex].completed;
+            
+            var myDate = new Date(this.todo_items[objIndex].day).getTime()
+            // if (myDate === Date.){
+
+            // }
+            if (Date.now() != myDate) {
+              this.joshFunction(myDate, this.todo_items[objIndex].title)
+              return true
+            }
+            // function myFunction() {
+            //   setInterval(function(){ alert("Hello"); }, 3000);
+            // }
+            // this.$notify({
+            //     group: 'foo',
+            //     title: myDate,
+            //     text: Date.now()
+            //   });
+        },
+        myFunction(){
+          for (var i=0; i<this.todo_items.length; i++){
+
+            const myNew =new Date(this.todo_items[i].day).getTime()
+            const myNewPlus = myNew + 1000;
+            if (this.todo_items[i].notify === true && Date.now() >= myNew && Date.now() <= myNewPlus){
+              this.joshFunction(this.todo_items[i].day, this.todo_items[i].title)
+              this.markComplete(this.todo_items[i].id)
+            }
+            // alert(myNewPlus)
+          }
+          
+        },
+
         archiveTodoMethodEvent(id){
           //  var objIndex = this.todo_items.findIndex(obj => obj.id === id);
           //   console.log(objIndex);
@@ -210,6 +271,9 @@ export default {
         
         if (localStorage.getItem('emails'))
             this.emails = JSON.parse(localStorage.getItem('emails'));
+        
+        setInterval(this.myFunction, 1000);  
+      
     },
     watch: {
         todo_items: {

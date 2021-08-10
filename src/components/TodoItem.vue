@@ -24,13 +24,26 @@
             </span>
         </div>
 
-        <div class=" col-md-9 col-sm-11 text-left mt-4">
+        <div class=" col-md-9 col-sm-11 text-left mt-4">notify-todo
             <span
              class="" 
              v-bind:class="{'is-complete':todo_item.completed}"
             >
                 {{todo_item.title}}/ {{  todo_item.day  }}
-                <span v-show="todo_item.notify"> / Notifiy</span>
+                <span v-show="todo_item.notify"></span>
+                <span
+                 @click="$emit('notify-todo', todo_item.id)"
+                 class="btn btn-link text-danger"
+                 v-if="todo_item.notify"
+                 >un-untifiy
+                </span>
+                <span
+                 @click="$emit('notify-todo', todo_item.id)"
+                 class="btn btn-link text-primary"
+                 v-else
+                 >
+                 Notifiy
+                </span>
             </span>
         </div>
         
@@ -40,16 +53,23 @@
                 class="material-icons edit-icon px-3" 
                 @click="$emit('edit-todo-item', todo_item.id)" 
                 v-if="!todo_item.completed"
-                >edit</span>
+            >
+                edit
+            </span>
 
             <button
                 class="btn btn-link px-3"
                 @click="$emit('archive-todo-item', todo_item.id)"
-                >Archive</button>
+            >
+                Archive
+            </button>
 
-            <i class="material-icons del-icon px-3" 
-            @click="$emit('del-todo-item', todo_item.id)"
-            >delete</i>
+            <i
+                class="material-icons del-icon px-3" 
+                @click="$emit('del-todo-item', todo_item.id)"
+            >
+                delete
+            </i>
             
         </div>
         

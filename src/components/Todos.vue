@@ -9,6 +9,8 @@
              v-on:mark-todo-item="markTodoMethod" 
              v-on:edit-todo-item="editTodoMethod"
              @archive-todo-item="archiveTodoMethod"
+             @notify-todo="notifyTodo"
+
              ></TodoItem>
         </div>
     </div>
@@ -37,7 +39,12 @@ import TodoItem from './TodoItem.vue';
             archiveTodoMethod(id){
                 //send to parent
                 this.$emit('archive-todo-event', id);
+            },
+            notifyTodo(id){
+                //send to parent
+                this.$emit('notify-todo', id);
             }
+            
         }
     }
 </script>

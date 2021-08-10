@@ -1,12 +1,30 @@
 <template>
     <header class="card-title bg-primary header">
-        <h2>Joshua Todos Project</h2>
+        <h2>Joshua Todos Project <span>{{ time }} </span></h2>
     </header>
 </template>
 
 <script>
     export default {
-        name: "Header"
+        name: "Header",
+        
+
+        data() {
+            return{
+                time: String,
+            }
+        },
+
+        methods: {
+            myTimer() {
+            var d = new Date();
+            this.time = d.toLocaleTimeString();
+            }
+        },
+
+        mounted(){
+            setInterval(this.myTimer, 1000);
+        }
     }
 </script>
 
